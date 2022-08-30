@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
     include: [
       {
         model: Product,
-        attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
+        through: ProductTag
       }
     ]
   })
@@ -29,15 +29,11 @@ router.get('/:id', (req, res) => {
     include: [
       {
         model: Product,
-        attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
+        through: ProductTag
       }
     ]
   })
     .then(categoryData => {
-      if (!categoryData) {
-        res.status(404).json({ message: 'No tag found with this particular id' }); 
-        return; 
-      }
       res.json(categoryData);
     })
     .catch(error => {
@@ -48,7 +44,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   Tag.create({
-    tag_name: req.body.tag_name
+    tag_name: req.body
   })
   .then(categoryData => res.json(categoryData))
   .catch(error => {
@@ -63,16 +59,12 @@ router.put('/:id', (req, res) => {
         id: req.params.id
     }
   })
-    .then(categoryData => {
-        if (!categoryData[0]) {
-            res.status(404).json({ message: 'No tag found with this particular id' });
-            return;
-        }
-        res.json(categoryData);
+  .then(categoryData => {
+      res.json(categoryData);
   })
-    .catch(error => {
-        console.log(error); 
-        res.status(500).json(error);
+  .catch(error => {
+      console.log(error); 
+      res.status(500).json(error);
   });
 });
 
@@ -83,10 +75,6 @@ router.delete('/:id', (req, res) => {
     }
   })
   .then(categoryData => {
-    if (!categoryData) {
-        res.status(404).json({ message: 'No tag found with this particular id' });
-        return;
-    }
     res.json(categoryData);
   })
   .catch(error => {
